@@ -1,6 +1,6 @@
 import openai
 
-KEY = "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"
+KEY = "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"
 openai.api_key = KEY
 
 def Answer(question):
@@ -18,7 +18,7 @@ def Answer(question):
 
     return response
 
-question = "ポケモンに関してニコニコ動画で出てくるコメントを10個生成してください"
+question = "ポケモンに関してニコニコ動画で出てくるコメントを10個生成してください。ただし日本語とローマ字一緒でお願いします"
 
 answer = Answer(question)
 
