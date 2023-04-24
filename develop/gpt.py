@@ -4,7 +4,7 @@ import re
 KEY = "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" #APIキー
 openai.api_key = KEY
 
-def Answer(question): #chatGPTで返答する関数
+def Answer(question): #chatGPTで返答する関数です
     
 
     completion = openai.ChatCompletion.create(
@@ -19,7 +19,7 @@ def Answer(question): #chatGPTで返答する関数
 
     return response
 
-def message_processing(question): #返答を処理する関数
+def message_processing(question): #返答を処理する関数です
     answer = Answer(question) #ChatGPTで文章を得る
     answer = answer.splitlines() #改行で分けて配列化する
     new_answers = []
