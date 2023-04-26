@@ -67,7 +67,7 @@ def main() -> None:
                 #
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
                 screen.fill(BLACK, (
-                    (WIDTH / 2) - (txt.get_width() / 2),
+                    (WIDTH / 2),
                     (HEIGHT / 2) - (txt.get_height() / 2),
                     txt.get_width(),
                     txt.get_height()
@@ -78,7 +78,7 @@ def main() -> None:
                     txt = font.render('|', True, WHITE)  # カーソルだけを表示
                 # テキストの描画(表示物, (x座標, y座標))
                 screen.blit(txt, (
-                    (WIDTH / 2) - (txt.get_width() / 2),
+                    (WIDTH / 2) ,
                     (HEIGHT / 2) - (txt.get_height() / 2)
                 ))
                 pg.display.update()  # 画面更新
