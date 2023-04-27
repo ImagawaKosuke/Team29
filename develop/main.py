@@ -16,18 +16,17 @@ pygame.init()
 SURFACE = pygame.display.set_mode((900, 600))    # サイズを指定して画面を作成
 pygame.display.set_caption("ニコニコタイピング")    # タイトル文字を指定
 font = pygame.font.SysFont('arial', 20)  # 使用するフォントの設定
-font2 = pygame.font.SysFont(FONT_PATH, 20) 
+#font2 = pygame.font.Font(FONT_PATH, 20) 
 roma_ji = ty.roma_ji_sentence
 japanese_sentence = ty.japanese_sentence
 
 def main():
-    print(japanese_sentence)
     # 表示更新ループ
     while True:
         SURFACE.fill(WHITE)          # 背景
         pygame.draw.line(SURFACE, (0,0,250), (0,493), (1000,493), 7)
         txt_romaji = font.render(str(roma_ji[0]), True, BLACK)
-        txt_japanese = font2.render(str(japanese_sentence[0]), True, BLACK)
+        txt_japanese = font.render(str(japanese_sentence[0]), True, BLACK)
         # テキストの描画(表示物, (x座標, y座標))
         SURFACE.blit(txt_romaji, (
             (WIDTH / 2) - (txt_romaji.get_width() / 2),

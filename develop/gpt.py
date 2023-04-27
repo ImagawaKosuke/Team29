@@ -24,5 +24,3 @@ def Answer(question): #chatGPTで返答する関数
 question = "ポケモンに関してニコニコ動画で出てくるコメントを10個生成してください。ただし日本語とローマ字一緒で答えてください.\nさらに日本語は[]のみでくくってください。ローマ字はダブルクォーテーションのみでくくってください。"
 
 answer = Answer(question) #呼び出し※answer[0]: ローマ字, answer[1]:日本語
-
-print(answer[1])

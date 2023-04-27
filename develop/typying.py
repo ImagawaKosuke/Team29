@@ -17,27 +17,33 @@ answer_sample = ('''1. [ポケモン最高！] ("Pokemon saikou!")
 9. [あのポケモンはどこで手に入るの？] ("Ano Pokemon wa doko de te ni hairu no?")
 10. [シンジ大好き！] ("Shinji daisuki!")''')
 
-def message_processing(question): #返答を処理する関数
-    answer = gpt.Answer(question) #ChatGPTで文章を得る
+def message_processing(answer): #返答を処理する関数
+    
     answer = answer.splitlines() #改行で分けて配列化する
     new_answers = []
     answers = [] #出力させるべき配列
+    for i in range(len(answer)):
+        new_answers = re.sub("\[.+?\]", "", answer[i]) #日本語を消す
+        new_answers = re.sub("\"|\"", "", new_answers) #ローマ字の文章のダブルクォーテーションを消す
+        answers.append(new_answers) # answersに入れる
+
+    return answers
+
+def japanese_processing(answer): #返答を処理する関数
+    
+    answer = answer.splitlines() #改行で分けて配列化する
     Japanese_answers = []
     JAns = []
     for i in range(len(answer)):
         Japanese_answers = re.sub("\".+?\"", "", answer[i])
         Japanese_answers = re.sub("\(.+?\)", "", answer[i])
         JAns.append(Japanese_answers)
-        new_answers = re.sub("\[.+?\]", "", answer[i]) #日本語を消す
-        new_answers = re.sub("\"|\"", "", new_answers) #ローマ字の文章のダブルクォーテーションを消す
-        answers.append(new_answers) # answersに入れる
 
-    return answers, JAns
+    return JAns
+
+answer = gpt.Answer(question) #ChatGPTで文章を得る
 
 #メッセージを出力する
-sentence = message_processing(question)
 
-roma_ji_sentence = sentence[0] #ローマ字
-japanese_sentence = sentence[1] #日本語
-
-print(roma_ji_sentence)
+roma_ji_sentence = message_processing(answer)#ローマ字
+japanese_sentence = japanese_processing(answer) #日本語
