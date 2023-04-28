@@ -1,6 +1,7 @@
 import sys
 from typing import Union
 import pygame as pg  # Pygameをpgという名前でインポート
+import threading
 
 
 def main() -> None:
@@ -17,6 +18,7 @@ def main() -> None:
     HEIGHT = 600  # ウィンドウ縦幅
     BLACK = (0, 0, 0)  # 黒色
     WHITE = (255, 255, 255)  # 白色
+    RED = (255, 0, 0)  
     #
     # ウィンドウの設定
     #
@@ -33,7 +35,12 @@ def main() -> None:
         (WIDTH / 2) - (txt.get_width() / 2),
         (HEIGHT / 2) - (txt.get_height() / 2)
     ))
-    txt_give = ''  # 確定(Enter)された文字列を保持する変数
+    question = ["aiueo","flagchan","123467890"]  # 確定(Enter)された文字列を保持する変数
+    txt_give = ''
+    count = 0
+    score = 0
+    bonus = 1
+    miss = 0
     txt_words = []  # 入力された文字を保持するリスト
     txt_tmp = ''  # 入力された1文字を一時的に保持する変数
     #
@@ -41,6 +48,8 @@ def main() -> None:
     #
     is_running = True  # イベント処理のトリガー
     pg.display.update()  # 画面更新
+    start = pg.time.get_ticks()
+
     while(is_running):
         for event in pg.event.get():
             if event.type == pg.QUIT:  # ウィンドウの閉じるボタン押下？
@@ -51,7 +60,7 @@ def main() -> None:
             #
             if event.type == pg.KEYDOWN:  # キー入力検知？
                 if event.key == pg.K_RETURN:  # Enter押下？
-                    txt_give = ''.join(txt_words)  # 文字列に直して保持
+                    txt_give = question[count]  # 文字列に直して保持
                     txt_words = []  # 初期化
                     txt_tmp = ''  # 初期化
                     print('input \'Enter\'')  # ログ
@@ -62,30 +71,73 @@ def main() -> None:
                     txt_tmp = jud_key(event.key)
                     if not txt_tmp == None:  # 入力可能な文字？
                         txt_words.append(txt_tmp)  # 入力可能であれば保持する
+                    if txt_give[len(txt_words) - 1:len(txt_words)] != txt_tmp:
+                        print("カッスやなｗ")
+                        bonus = 1
+                        miss += 1
+                        txt_words.pop(-1)
+                    if len(txt_words) == len(txt_give):
+                        start = pg.time.get_ticks()
+                        score += int(10 * bonus)
+                        bonus += 0.1
+                        print("ok")
+                        txt_words = []
+                        count+=1
+                        if count == len(question):
+                            print("おめ")
+                            print(score)
+                            sys.exit(0)
+                        txt_give = question[count]
+                        
                 #
                 # テキスト入力処理(描画)
                 #
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
-                screen.fill(BLACK, (
-                    (WIDTH / 2),
-                    (HEIGHT / 2) - (txt.get_height() / 2),
-                    txt.get_width(),
-                    txt.get_height()
-                ))
-                if not len(txt_words) == 0:  # 入力中のテキストがあるか？
-                    txt = font.render(''.join(txt_words) + '|', True, WHITE)  # テキストとカーソルを表示
-                else:
-                    txt = font.render('|', True, WHITE)  # カーソルだけを表示
-                # テキストの描画(表示物, (x座標, y座標))
+                screen.fill((0,0,0,0))
+                txt = font.render(''.join(txt_give), True, WHITE)
                 screen.blit(txt, (
                     (WIDTH / 2) ,
-                    (HEIGHT / 2) - (txt.get_height() / 2)
+                    (HEIGHT / 2 -100) - (txt.get_height() / 2)
                 ))
-                pg.display.update()  # 画面更新
+                txt = font.render(f'score: {score}', True, WHITE)
+                screen.blit(txt, (
+                    (WIDTH -500) ,
+                    (HEIGHT -100) - (txt.get_height() / 2)
+                ))
+                txt = font.render(f'bonus:× {bonus:.1f}', True, WHITE)
+                screen.blit(txt, (
+                    (WIDTH -500) ,
+                    (HEIGHT -150) - (txt.get_height() / 2)
+                ))
+                txt = font.render(f'miss: {miss}', True, WHITE)
+                screen.blit(txt, (
+                    (WIDTH -500) ,
+                    (HEIGHT -200) - (txt.get_height() / 2)
+                ))
+                txt = font.render(f'あ: {(pg.time.get_ticks() - start)/1000}', True, WHITE)
+                screen.blit(txt, (
+                    (WIDTH-500) ,
+                    (HEIGHT -100) - (txt.get_height() / 2)
+                ))
+                if not len(txt_words) == 0:  # 入力中のテキストがあるか？
+                    txt = font.render(''.join(txt_words), True, RED)  # テキストとカーソルを表示
+                else:
+                    txt = font.render('', True, RED)
+                screen.blit(txt, (
+                    (WIDTH / 2) ,
+                    (HEIGHT / 2 - 100) - (txt.get_height() / 2)
+                ))
+                pg.display.update()
+                # テキストの描画(表示物, (x座標, y座標))
+            
                 print('txt_give : ', txt_give)  # ログ
                 print('txt_words : ', txt_words)  # ログ
                 print('txt_tmp : ', txt_tmp)  # ログ
                 print('-------------------------')  # ログ
+        pg.display.update()  # 画面更新
+        if (pg.time.get_ticks() - start) //1000 >= 10:
+            print("カッスやなｗ")
+            sys.exit(0)
 
 
 def jud_key(key: int) -> Union[str, None]:
