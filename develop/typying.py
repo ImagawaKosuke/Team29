@@ -2,8 +2,8 @@ import gpt
 import re
 
 #ChatGPTでで促す文
-question = '''ポケモンに関してニコニコ動画で出てくるコメントを10個生成してください。ただし日本語とローマ字一緒で答えてください.
-さらに日本語は()のみでくくってください。ローマ字はダブルクウォーテーションのみでくくってください。'''
+question = '''ポケモンに関してニコニコ動画で出てくるポジティブなコメントを10個生成してください。ただし日本語とローマ字一緒で答えてください.
+さらに日本語は[]のみでくくってください。ローマ字はダブルクウォーテーションのみでくくってください。'''
 
 #サンプルの返答
 answer_sample = ('''1. [ポケモン最高！] ("Pokemon saikou!")
@@ -24,6 +24,7 @@ def message_processing(answer): #返答を処理する関数
     
     for i in range(len(answer)):
         new_answers = re.sub("\[.+?\]", "", answer[i]) #日本語を消す
+        new_answers = re.sub("\(|\)", "", new_answers)
         new_answers = re.sub("\"|\"", "", new_answers) #ローマ字の文章のダブルクォーテーションを消す
         answers.append(new_answers) # answersに入れる
 
@@ -35,7 +36,8 @@ def message_japanese(answer):
     JAns = []
     for i in range(len(answer)):
         Japanese_answers = re.sub("\".+?\"", "", answer[i])
-        Japanese_answers = re.sub("\(.+?\)", "", answer[i])
+        Japanese_answers = re.sub("\(|\)", "", Japanese_answers)
+        Japanese_answers = re.sub("\[|\]", "", Japanese_answers)
         JAns.append(Japanese_answers)
     return JAns
 
@@ -45,3 +47,4 @@ roma_ji_sentence = message_processing(answer_res) #ローマ字
 japanese_sentence = message_japanese(answer_res) #日本語
 
 #print(japanese_sentence)
+#print(roma_ji_sentence)
