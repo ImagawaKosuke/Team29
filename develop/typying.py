@@ -3,7 +3,7 @@ import re
 
 #ChatGPTでで促す文
 question = '''ポケモンに関してニコニコ動画で出てくるコメントを10個生成してください。ただし日本語とローマ字一緒で答えてください.
-さらに日本語は[]のみでくくってください。ローマ字はダブルクウォーテーションのみでくくってください。'''
+さらに日本語は()のみでくくってください。ローマ字はダブルクウォーテーションのみでくくってください。'''
 
 #サンプルの返答
 answer_sample = ('''1. [ポケモン最高！] ("Pokemon saikou!")
@@ -35,7 +35,7 @@ def message_japanese(answer):
     JAns = []
     for i in range(len(answer)):
         Japanese_answers = re.sub("\".+?\"", "", answer[i])
-        Japanese_answers = re.sub("\[.+?\]", "", answer[i])
+        Japanese_answers = re.sub("\(.+?\)", "", answer[i])
         JAns.append(Japanese_answers)
     return JAns
 

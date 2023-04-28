@@ -22,7 +22,7 @@ def main():
     while True:
         SURFACE.fill(WHITE)          # 背景
         pygame.draw.line(SURFACE, (0,0,250), (0,493), (1000,493), 7)
-        font = pygame.font.SysFont('arial', 30)  # 使用するフォントの設定
+        font = pygame.font.SysFont('hgpｺﾞｼｯｸm', 30)  # 使用するフォントの設定
         txt_romaji = font.render(str(roma_ji[0]), True, BLACK)
         font2 = pygame.font.SysFont('hgpｺﾞｼｯｸm', 23)  # 使用するフォントの設定
         txt_japanese = font2.render(str(japanese_sentence[0]), True, BLACK)
