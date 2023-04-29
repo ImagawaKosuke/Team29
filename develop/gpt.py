@@ -1,7 +1,7 @@
 import openai
 import re
 
-KEY = "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" #APIキー
+KEY = "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" #APIキー
 openai.api_key = KEY
 
 def Answer(question): #chatGPTで返答する関数

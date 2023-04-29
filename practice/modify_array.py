@@ -19,6 +19,7 @@ for i in range(len(answer)):
     new_answers = re.sub("^[0-9]*.", "",new_answers)
     new_answers = re.sub("^\s", "",new_answers)
     new_answers = re.sub("\"|\"", "", new_answers)
+    new_answers.lower()
     answers.append(new_answers)
 print(answers)
 print("aaa") 
