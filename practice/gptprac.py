@@ -1,6 +1,6 @@
 import openai
 
-KEY = "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"
+KEY = "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"
 openai.api_key = KEY
 
 def Answer(question):
@@ -17,9 +17,11 @@ def Answer(question):
     response = completion.choices[0].message.content
 
     return response
+question = "ポケモンに関してニコニコ動画で出てくるコメントを15文字程度で10個生成してください。ただしローマ字で答えてください.入力にShiftキーを使う必要がある文字と記号は使わないでください。さらにローマ字はダブルクウォーテーションのみでくくってください。"
 
-question = "ポケモンに関してニコニコ動画で出てくるコメントを10個生成してください。ただし日本語とローマ字一緒でお願いします"
+#question = "ポケモンに関してニコニコ動画で出てくるコメントを15文字程度で10個生成してください。ただし日本語とローマ字一緒で答えてください.入力にShiftキーを使う必要がある文字と記号は使わないでください。さらに日本語は[]のみでくくってください。ローマ字はダブルクウォーテーションのみでくくってください。"
 
 answer = Answer(question)
 
 print(answer)
+print("x")
