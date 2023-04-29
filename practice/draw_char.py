@@ -45,12 +45,11 @@ def main() -> None:
     txt_tmp = ''  # 入力された1文字を一時的に保持する変数
     #
     # イベント処理
-    #
-    is_running = True  # イベント処理のトリガー
+    
     pg.display.update()  # 画面更新
     start = pg.time.get_ticks()
 
-    while(is_running):
+    while(True):
         for event in pg.event.get():
             if event.type == pg.QUIT:  # ウィンドウの閉じるボタン押下？
                 pg.quit()  # 全てのpygameモジュールの初期化を解除

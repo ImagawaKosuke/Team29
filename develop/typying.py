@@ -42,9 +42,12 @@ def message_japanese(answer):
     return JAns
 
 #メッセージを出力する
-answer_res = gpt.Answer(question) #ChatGPTで文章を得る
-roma_ji_sentence = message_processing(answer_res) #ローマ字
-japanese_sentence = message_japanese(answer_res) #日本語
+#answer_res = gpt.Answer(question) #ChatGPTで文章を得る
+#roma_ji_sentence = message_processing(answer_res) #ローマ字
+#japanese_sentence = message_japanese(answer_res) #日本語
+
+roma_ji_sentence = message_processing(answer_sample) #ローマ字
+japanese_sentence = message_japanese(answer_sample) #日本語
 
 #print(japanese_sentence)
 #print(roma_ji_sentence)
