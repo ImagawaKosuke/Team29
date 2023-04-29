@@ -2,6 +2,8 @@ import sys
 from typing import Union
 import pygame as pg  # Pygameをpgという名前でインポート
 import threading
+import random
+import modify_array
 
 
 def main() -> None:
@@ -19,6 +21,7 @@ def main() -> None:
     BLACK = (0, 0, 0)  # 黒色
     WHITE = (255, 255, 255)  # 白色
     RED = (255, 0, 0)  
+    question_height = 0
     #
     # ウィンドウの設定
     #
@@ -30,12 +33,14 @@ def main() -> None:
     # テキスト入力処理の初期設定
     #
     txt = font.render('|', True, WHITE)# 描画するテキスト(文字列, アンチエイリアスの有無, 色)
+    player_input = font.render('', True, RED)
+    question = font.render('', True, WHITE)
     # テキストの描画(表示物, (x座標, y座標))
     screen.blit(txt, (
         (WIDTH / 2) - (txt.get_width() / 2),
         (HEIGHT / 2) - (txt.get_height() / 2)
     ))
-    question = ["aiueo","flagchan","123467890"]  # 確定(Enter)された文字列を保持する変数
+    questions = ["aiueokakikukeko","flagchan","123467890"]  # 確定(Enter)された文字列を保持する変数
     txt_give = ''
     count = 0
     score = 0
@@ -45,11 +50,12 @@ def main() -> None:
     txt_tmp = ''  # 入力された1文字を一時的に保持する変数
     #
     # イベント処理
-    
+    #
+    is_running = True  # イベント処理のトリガー
     pg.display.update()  # 画面更新
-    start = pg.time.get_ticks()
-
-    while(True):
+    start = 0
+    str_x = 9999
+    while(is_running):
         for event in pg.event.get():
             if event.type == pg.QUIT:  # ウィンドウの閉じるボタン押下？
                 pg.quit()  # 全てのpygameモジュールの初期化を解除
@@ -59,9 +65,13 @@ def main() -> None:
             #
             if event.type == pg.KEYDOWN:  # キー入力検知？
                 if event.key == pg.K_RETURN:  # Enter押下？
-                    txt_give = question[count]  # 文字列に直して保持
+                    start = pg.time.get_ticks()
+                    questions = modify_array.answers
+                    txt_give = questions[count]  # 文字列に直して保持
                     txt_words = []  # 初期化
                     txt_tmp = ''  # 初期化
+                    str_x = screen.get_width()
+                    question_height = random.uniform(-200, 200)
                     print('input \'Enter\'')  # ログ
                 elif event.key == pg.K_BACKSPACE:  # BackSpace押下？
                     if not len(txt_words) == 0:  # 入力中の文字が存在するか？
@@ -74,58 +84,34 @@ def main() -> None:
                         print("カッスやなｗ")
                         bonus = 1
                         miss += 1
-                        txt_words.pop(-1)
+                        print(txt_tmp)
+                        if (txt_tmp != None):
+                            txt_words.pop(-1)
                     if len(txt_words) == len(txt_give):
+                        str_x = screen.get_width()
                         start = pg.time.get_ticks()
                         score += int(10 * bonus)
                         bonus += 0.1
+                        question_height = random.uniform(-200, 200)
                         print("ok")
                         txt_words = []
                         count+=1
-                        if count == len(question):
+                        if count == len(questions):
                             print("おめ")
                             print(score)
                             sys.exit(0)
-                        txt_give = question[count]
+                        txt_give = questions[count]
                         
                 #
                 # テキスト入力処理(描画)
                 #
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
                 screen.fill((0,0,0,0))
-                txt = font.render(''.join(txt_give), True, WHITE)
-                screen.blit(txt, (
-                    (WIDTH / 2) ,
-                    (HEIGHT / 2 -100) - (txt.get_height() / 2)
-                ))
-                txt = font.render(f'score: {score}', True, WHITE)
-                screen.blit(txt, (
-                    (WIDTH -500) ,
-                    (HEIGHT -100) - (txt.get_height() / 2)
-                ))
-                txt = font.render(f'bonus:× {bonus:.1f}', True, WHITE)
-                screen.blit(txt, (
-                    (WIDTH -500) ,
-                    (HEIGHT -150) - (txt.get_height() / 2)
-                ))
-                txt = font.render(f'miss: {miss}', True, WHITE)
-                screen.blit(txt, (
-                    (WIDTH -500) ,
-                    (HEIGHT -200) - (txt.get_height() / 2)
-                ))
-                txt = font.render(f'あ: {(pg.time.get_ticks() - start)/1000}', True, WHITE)
-                screen.blit(txt, (
-                    (WIDTH-500) ,
-                    (HEIGHT -100) - (txt.get_height() / 2)
-                ))
                 if not len(txt_words) == 0:  # 入力中のテキストがあるか？
-                    txt = font.render(''.join(txt_words), True, RED)  # テキストとカーソルを表示
+                    player_input = font.render(''.join(txt_words), True, RED)  # テキストとカーソルを表示
                 else:
-                    txt = font.render('', True, RED)
-                screen.blit(txt, (
-                    (WIDTH / 2) ,
-                    (HEIGHT / 2 - 100) - (txt.get_height() / 2)
-                ))
+                    player_input = font.render('', True, RED)
+                
                 pg.display.update()
                 # テキストの描画(表示物, (x座標, y座標))
             
@@ -133,8 +119,41 @@ def main() -> None:
                 print('txt_words : ', txt_words)  # ログ
                 print('txt_tmp : ', txt_tmp)  # ログ
                 print('-------------------------')  # ログ
+        screen.fill((0,0,0,0))
+        question = font.render(''.join(txt_give), True, WHITE)
+        screen.blit(question, (
+            str_x ,
+            (HEIGHT / 2 -100) - (question.get_height() / 2 + question_height)
+        ))
+        screen.blit(player_input, (
+            str_x ,
+            (HEIGHT / 2 - 100) - (player_input.get_height() / 2 + question_height)
+        ))
+        txt = font.render(f'score: {score}', True, WHITE)
+        screen.blit(txt, (
+            (WIDTH -500) ,
+            (HEIGHT -100) - (txt.get_height() / 2)
+        ))
+        txt = font.render(f'bonus:× {bonus:.1f}', True, WHITE)
+        screen.blit(txt, (
+            (WIDTH -500) ,
+            (HEIGHT -150) - (txt.get_height() / 2)
+        ))
+        txt = font.render(f'miss: {miss}', True, WHITE)
+        screen.blit(txt, (
+            (WIDTH -500) ,
+            (HEIGHT -200) - (txt.get_height() / 2)
+        ))
+        txt = font.render(f'あ: {(pg.time.get_ticks() - start)//1000}', True, WHITE)
+        screen.blit(txt, (
+            (WIDTH-500) ,
+            (HEIGHT -100) - (txt.get_height() / 2)
+        ))
+        str_x -= 0.1
         pg.display.update()  # 画面更新
-        if (pg.time.get_ticks() - start) //1000 >= 10:
+        #print(screen.get_width())
+        #print(str_x)
+        if str_x < question.get_width() * -1:
             print("カッスやなｗ")
             sys.exit(0)
 

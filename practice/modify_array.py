@@ -1,4 +1,5 @@
 import re
+import gptprac
 
 answer = ('''1. [ポケモン最高！] ("Pokemon saikou!")
 2. [俺もジムリーダー目指す！] ("Ore mo Jimu Ridaa mezasu!")
@@ -10,13 +11,17 @@ answer = ('''1. [ポケモン最高！] ("Pokemon saikou!")
 8. [豆知識：ニドキングは世界最強のポケモンの一つだ。] ("Mame chishiki: Nidokingu wa sekai saikyou no Pokemon no hitotsu da.")
 9. [あのポケモンはどこで手に入るの？] ("Ano Pokemon wa doko de te ni hairu no?")
 10. [シンジ大好き！] ("Shinji daisuki!")''')
-answer = answer.splitlines()
+answer = gptprac.answer.splitlines()
+print(answer)
 answers = []
 for i in range(len(answer)):
     new_answers = re.sub("\[.+?\]", "", answer[i])
+    new_answers = re.sub("^[0-9]*.", "",new_answers)
+    new_answers = re.sub("^\s", "",new_answers)
     new_answers = re.sub("\"|\"", "", new_answers)
     answers.append(new_answers)
-    
+print(answers)
+print("aaa") 
 for i in range(len(answers)):
     if answers[i].find(str(i+1)+'.  ') != -1:
         answers[i] = answers[i].replace(str(i+1)+'.  ','')
