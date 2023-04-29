@@ -7,12 +7,15 @@ import typying as ty
 import time
 from typing import Union
 import threading
+import random
+import gpt
 
 BLACK = (0, 0, 0)  # 黒色
 WHITE = (255, 255, 255)  # 白色
 RED = (255, 0, 0) 
 WIDTH = 1000  # ウィンドウ横幅
 HEIGHT = 600  # ウィンドウ縦幅
+question_height = 0
 
 #ゲームの詳細
 score = 0
@@ -21,43 +24,35 @@ miss = 0
 
 pygame.init()
 SURFACE = pygame.display.set_mode((WIDTH, HEIGHT))    # サイズを指定して画面を作成
-pygame.display.set_caption("ニコニコタイピング")    # タイトル文字を指定
-
+pygame.display.set_caption("Live Typing")    # タイトル文字を指定
 background = pygame.image.load("./develop/nikoniko.jpg")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
+background2 = pygame.transform.chop(background, pygame.Rect(0,0,WIDTH, 500))
+title = pygame.image.load("./develop/title.png")
 font = pygame.font.SysFont('hgpｺﾞｼｯｸm', 30)  # 使用するフォントの設定
-font2 = pygame.font.SysFont('hgpｺﾞｼｯｸm', 23)  # 使用するフォントの設定
-font3 = pygame.font.SysFont(None, 100)
-font4 = pygame.font.SysFont(None, 50)
-start_button_surface = font4.render("Start", True, (255, 255, 255))
-start_button_rect = start_button_surface.get_rect(center=(WIDTH/2, 400))
 
-# 説明画面の描画
-def draw_pre_screen():
-    
-    SURFACE.blit(background, (0, 0))
-    start_message_surface = font3.render("Live Typing", True, (0, 255, 0))
-    start_message_rect = start_message_surface.get_rect(center=(WIDTH/2, 200))
-    explanation_surface = font2.render("制限時間は2分",True,(0,0,0))
-    explanation_rect = explanation_surface.get_rect(center=(WIDTH/2,HEIGHT/2))
-    pygame.draw.rect(SURFACE, RED, [400, 375, 200, 50])
-    SURFACE.blit(start_message_surface, start_message_rect)
-    SURFACE.blit(start_button_surface, start_button_rect)
-    SURFACE.blit(explanation_surface, explanation_rect)
+question = '''ニコニコ動画で出てくるコメントを15文字程度で10個生成してください。
+条件:
+・ローマ字のみで答えてください.
+・入力にShiftキーを使う必要がある文字と記号(!や~など)は使わないでください。
+・アルファベットとスペースのみの返答でお願いします。
+・ローマ字はダブルクウォーテーションのみでくくってください。'''
 
+answer_res = gpt.Answer(question)
+print(answer_res)
 # スタート画面の描画
 def draw_start_screen():
     
     SURFACE.blit(background, (0, 0))
-
-    text_surface = font4.render("Press Space to Start", True, (0, 0, 0))
+    SURFACE.blit(title, (0, 0))
+    text_surface = font.render("Press Space to Start", True, (0, 0, 0))
     text_rect = text_surface.get_rect(center=(WIDTH/2, HEIGHT/2))
     SURFACE.blit(text_surface, text_rect)
 
 # ゲーム画面の描画
 def draw_game_screen(score,bonus,miss):
-    SURFACE.fill((0, 0, 0))
-    SURFACE.blit(background, (0, 0))
+    SURFACE.fill(WHITE)
+    #SURFACE.blit(background, (0, 0))
     pygame.draw.line(SURFACE, (50,50,50), (0,510), (1000,510), 38)
     pygame.draw.line(SURFACE, (250,250,250), (0,570), (1000,570), 60)
     text_surface = font.render(f"MISS:{miss}", True, (0, 0, 0))
@@ -73,32 +68,25 @@ def draw_game_screen(score,bonus,miss):
 
 # ゲームの処理
 def tgame():
-    
-    
-    
     start_time = time.time()
-    txt = font.render('|', True, BLACK)# 描画するテキスト(文字列, アンチエイリアスの有無, 色)
-    
     # イベント処理
-        # テキストの描画(表示物, (x座標, y座標))
-    SURFACE.blit(txt, (
-        (WIDTH / 2) - (txt.get_width() / 2),
-        (HEIGHT / 2) - (txt.get_height() / 2)
-    ))
 
     count = 0
     score = 0
     bonus = 1
     miss = 0
-    japanese_sentence = ty.japanese_sentence
-    question = ty.roma_ji_sentence
+    question_height = 0
+    questions = ty.message_processing(answer_res)
+    player_input = font.render('', True, RED)
+    question = font.render('', True, BLACK)
     txt_give = ''
     txt_words = []  # 入力された文字を保持するリスト
     txt_tmp = ''  # 入力された1文字を一時的に保持する変数
-    # ゲーム画面の描画
+    
+    start = 0
+    str_x = 9999
     draw_game_screen(score,bonus,miss)
     pygame.display.update()  # 画面更新
-    start = pygame.time.get_ticks()
     while True:
         # イベントの処理
         for event in pygame.event.get():
@@ -110,9 +98,12 @@ def tgame():
             #
             if event.type == pygame.KEYDOWN:  # キー入力検知？
                 if event.key == pygame.K_RETURN:  # Enter押下？
-                    txt_give = question[count]  # 文字列に直して保持
-                    txt_words = []  # 初期化
+                    start = pygame.time.get_ticks()
+                    txt_give = questions[count]
+                    txt_words = [' ']  # 初期化
                     txt_tmp = ''  # 初期化
+                    str_x = SURFACE.get_width()
+                    question_height = random.uniform(-200, 200)
                     print('input \'Enter\'')  # ログ
                 elif event.key == pygame.K_BACKSPACE:  # BackSpace押下？
                     if not len(txt_words) == 0:  # 入力中の文字が存在するか？
@@ -125,42 +116,61 @@ def tgame():
                         print("カッスやなｗ")
                         bonus = 1
                         miss += 1
-                        txt_words.pop(-1)
+                        print(txt_tmp)
+                        if (txt_tmp != None):
+                            txt_words.pop(-1)
                     if len(txt_words) == len(txt_give):
                         start = pygame.time.get_ticks()
                         score += int(10 * bonus)
                         bonus += 0.1
+                        question_height = random.uniform(-200, 200)
                         print("ok")
-                        txt_words = []
+                        txt_words = [' ']
                         count+=1
-                        if count == len(question):
+                        if count == len(questions):
                             print("おめ")
                             print(score)
                             sys.exit(0)
-                        txt_give = question[count]
+                        txt_give = questions[count]
                 # テキスト入力処理(描画)
+
+                if not len(txt_words) == 0:  # 入力中のテキストがあるか？
+                    player_input = font.render(''.join(txt_words), True, RED)  # テキストとカーソルを表示
+                else:
+                    player_input = font.render('', True, RED)
+                
+                pygame.display.update()
+                # テキストの描画(表示物, (x座標, y座標))
+            
+                print('txt_give : ', txt_give)  # ログ
+                print('txt_words : ', txt_words)  # ログ
+                print('txt_tmp : ', txt_tmp)  # ログ
+                print('-------------------------')  # ログ
                 #
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
-                txt = font.render(''.join(txt_give), True, BLACK)
-                SURFACE.blit(txt, (
-                    (WIDTH / 2) ,
-                    (HEIGHT / 2 -100) - (txt.get_height() / 2)
-                ))
-                if not len(txt_words) == 0:  # 入力中のテキストがあるか？
-                    txt = font.render(''.join(txt_words), True, RED)  # テキストとカーソルを表示
-                else:
-                    txt = font.render('', True, RED)
-                SURFACE.blit(txt, (
-                    (WIDTH / 2) ,
-                    (HEIGHT / 2 - 100) - (txt.get_height() / 2)
-                ))
-                    # 残り時間の計算と表示
+        SURFACE.blit(background2, (0, 0, 0, 0))
+        question = font.render(''.join(txt_give), True,BLACK)
+        SURFACE.blit(question, (
+            str_x ,
+            (HEIGHT / 2 -100) - (question.get_height() / 2 + question_height)
+        ))
+        
+        SURFACE.blit(player_input, (
+            str_x ,
+            (HEIGHT / 2 - 100) - (player_input.get_height() / 2 + question_height)
+        ))
+        str_x -= 0.1
+        
+        pygame.display.update()  # 画面更新
+        if str_x < question.get_width() * -1:
+            print("カッスやなｗ")
+            sys.exit(0)
+            # 残り時間の計算と表示
         elapsed_time = time.time() - start_time
         remaining_time = max(0, 180 - elapsed_time)
-        time_surface = font.render("TIME:{:.2f}".format(remaining_time), True, (0, 0, 0))
+        time_surface = font.render(f'TIME: {(pygame.time.get_ticks() - start)//1000}', True, (0, 0, 0))
         #time_rect = time_surface.get_rect(center=(screen_width/2, screen_height/2 + 50))
         time_rect = time_surface.get_rect(center=(900, 568))
-
         
         pygame.draw.line(SURFACE, (0,0,250), (0,510), ((elapsed_time)*1000/10,510), 38)
         
@@ -168,7 +178,6 @@ def tgame():
 
         # ゲーム終了判定
         if remaining_time <= 0:
-            SURFACE.fill((255, 255, 255))
             SURFACE.blit(background, (0, 0))
             text_surface = font.render("TIME UP", True, (0, 0, 0))
             score_surface = font.render(f"SCORE:{score}", True, (0, 0, 0))
@@ -180,9 +189,8 @@ def tgame():
             pygame.display.update()
             pygame.time.wait(2000)
             break
-
-        # 画面の更新
-        pygame.display.update()
+        
+        
 
 
 def main() -> None:
@@ -190,10 +198,8 @@ def main() -> None:
     # 表示更新ループ
     while True:
         if scene==0:
-            draw_pre_screen()
-        elif scene==1:
             draw_start_screen()
-        elif scene==2:
+        elif scene==1:
             tgame()
         pygame.display.update()            # 画面更新
         
@@ -202,15 +208,12 @@ def main() -> None:
             if event.type == QUIT:  # 閉じるボタンが押されたら終了
                 pygame.quit()       # Pygameの終了（画面を閉じる）
                 sys.exit()          # プログラムの終了
-            elif event.type == pygame.MOUSEBUTTONDOWN and start_button_rect.collidepoint(event.pos) and scene==0:
-                # スタートボタンが押されたら、ゲームのスタート画面を表示する
-                   scene=1    
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     quit()
-                elif event.key == pygame.K_SPACE and scene==1:
-                    scene=2
+                elif event.key == pygame.K_SPACE and scene==0:
+                    scene=1
                     
 
 def jud_key(key: int) -> Union[str, None]:
@@ -237,10 +240,10 @@ def jud_key(key: int) -> Union[str, None]:
         return ' '
     elif key == pygame.K_PERIOD:
         return '.'
-    elif key == pygame.K_LEFTPAREN:
-        return '('
-    elif key == pygame.K_RIGHTPAREN:
-        return ')'
+    elif key == pygame.K_COMMA:
+        return ','
+    elif key == pygame.K_MINUS:
+        return '-'
     else:  # 例外？
         return None
         
