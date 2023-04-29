@@ -15,10 +15,16 @@ answer = gptprac.answer.splitlines()
 print(answer)
 answers = []
 for i in range(len(answer)):
+    if re.search(r'[ぁ-ん]+|[ァ-ヴー]+', answer[i]):
+        answer = []
+        print("aaaaaaaaaaaaaaaa")
+        break
     new_answers = re.sub("\[.+?\]", "", answer[i])
     new_answers = re.sub("^[0-9]*.", "",new_answers)
-    new_answers = re.sub("^\s", "",new_answers)
+    new_answers = re.sub("[\!\.\?\~]", "",new_answers)
     new_answers = re.sub("\"|\"", "", new_answers)
+    new_answers = re.sub("^\s", "",new_answers)
+    new_answers = re.sub("$\s", "",new_answers)
     answers.append(new_answers)
 print(answers)
 print("aaa") 

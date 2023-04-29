@@ -40,7 +40,7 @@ def main() -> None:
         (WIDTH / 2) - (txt.get_width() / 2),
         (HEIGHT / 2) - (txt.get_height() / 2)
     ))
-    questions = ["aiueokakikukeko","flagchan","123467890"]  # 確定(Enter)された文字列を保持する変数
+    questions = ["Aiueokakikukeko","flagchan","123467890"]  # 確定(Enter)された文字列を保持する変数
     txt_give = ''
     count = 0
     score = 0
@@ -55,6 +55,9 @@ def main() -> None:
     pg.display.update()  # 画面更新
     start = 0
     str_x = 9999
+    questions = modify_array.answers
+    while questions == []:
+        questions = modify_array.answers
     while(is_running):
         for event in pg.event.get():
             if event.type == pg.QUIT:  # ウィンドウの閉じるボタン押下？
@@ -66,7 +69,6 @@ def main() -> None:
             if event.type == pg.KEYDOWN:  # キー入力検知？
                 if event.key == pg.K_RETURN:  # Enter押下？
                     start = pg.time.get_ticks()
-                    questions = modify_array.answers
                     txt_give = questions[count]  # 文字列に直して保持
                     txt_words = []  # 初期化
                     txt_tmp = ''  # 初期化
@@ -78,29 +80,31 @@ def main() -> None:
                         txt_words.pop()  # 最後の文字を取り出す(削除)
                 else:  # 上記以外のキーが押された時
                     txt_tmp = jud_key(event.key)
+                    print(pg.key.name(event.key))
+                    print(txt_tmp)
                     if not txt_tmp == None:  # 入力可能な文字？
                         txt_words.append(txt_tmp)  # 入力可能であれば保持する
-                    if txt_give[len(txt_words) - 1:len(txt_words)] != txt_tmp:
-                        print("カッスやなｗ")
-                        bonus = 1
-                        miss += 1
-                        print(txt_tmp)
-                        if (txt_tmp != None):
-                            txt_words.pop(-1)
-                    if len(txt_words) == len(txt_give):
-                        str_x = screen.get_width()
-                        start = pg.time.get_ticks()
-                        score += int(10 * bonus)
-                        bonus += 0.1
-                        question_height = random.uniform(-200, 200)
-                        print("ok")
-                        txt_words = []
-                        count+=1
-                        if count == len(questions):
-                            print("おめ")
-                            print(score)
-                            sys.exit(0)
-                        txt_give = questions[count]
+                        if txt_give[len(txt_words) - 1:len(txt_words)] != txt_tmp:
+                            print("カッスやなｗ")
+                            bonus = 1
+                            miss += 1
+                            print(txt_tmp)
+                            if (txt_tmp != None):
+                                txt_words.pop(-1)
+                        if len(txt_words) == len(txt_give):
+                            str_x = screen.get_width()
+                            start = pg.time.get_ticks()
+                            score += int(10 * bonus)
+                            bonus += 0.1
+                            question_height = random.uniform(-200, 200)
+                            print("ok")
+                            txt_words = []
+                            count+=1
+                            if count == len(questions):
+                                print("おめ")
+                                print(score)
+                                sys.exit(0)
+                            txt_give = questions[count]
                         
                 #
                 # テキスト入力処理(描画)
