@@ -27,13 +27,30 @@ background = pygame.image.load("./develop/nikoniko.jpg")
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 font = pygame.font.SysFont('hgpｺﾞｼｯｸm', 30)  # 使用するフォントの設定
 font2 = pygame.font.SysFont('hgpｺﾞｼｯｸm', 23)  # 使用するフォントの設定
+font3 = pygame.font.SysFont(None, 100)
+font4 = pygame.font.SysFont(None, 50)
+start_button_surface = font4.render("Start", True, (255, 255, 255))
+start_button_rect = start_button_surface.get_rect(center=(WIDTH/2, 400))
+
+# 説明画面の描画
+def draw_pre_screen():
+    
+    SURFACE.blit(background, (0, 0))
+    start_message_surface = font3.render("Live Typing", True, (0, 255, 0))
+    start_message_rect = start_message_surface.get_rect(center=(WIDTH/2, 200))
+    explanation_surface = font2.render("制限時間は2分",True,(0,0,0))
+    explanation_rect = explanation_surface.get_rect(center=(WIDTH/2,HEIGHT/2))
+    pygame.draw.rect(SURFACE, RED, [400, 375, 200, 50])
+    SURFACE.blit(start_message_surface, start_message_rect)
+    SURFACE.blit(start_button_surface, start_button_rect)
+    SURFACE.blit(explanation_surface, explanation_rect)
 
 # スタート画面の描画
 def draw_start_screen():
     
     SURFACE.blit(background, (0, 0))
 
-    text_surface = font.render("Press Space to Start", True, (0, 0, 0))
+    text_surface = font4.render("Press Space to Start", True, (0, 0, 0))
     text_rect = text_surface.get_rect(center=(WIDTH/2, HEIGHT/2))
     SURFACE.blit(text_surface, text_rect)
 
@@ -173,8 +190,10 @@ def main() -> None:
     # 表示更新ループ
     while True:
         if scene==0:
-            draw_start_screen()
+            draw_pre_screen()
         elif scene==1:
+            draw_start_screen()
+        elif scene==2:
             tgame()
         pygame.display.update()            # 画面更新
         
@@ -183,12 +202,15 @@ def main() -> None:
             if event.type == QUIT:  # 閉じるボタンが押されたら終了
                 pygame.quit()       # Pygameの終了（画面を閉じる）
                 sys.exit()          # プログラムの終了
+            elif event.type == pygame.MOUSEBUTTONDOWN and start_button_rect.collidepoint(event.pos) and scene==0:
+                # スタートボタンが押されたら、ゲームのスタート画面を表示する
+                   scene=1    
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     quit()
-                elif event.key == pygame.K_SPACE and scene==0:
-                    scene=1
+                elif event.key == pygame.K_SPACE and scene==1:
+                    scene=2
                     
 
 def jud_key(key: int) -> Union[str, None]:
