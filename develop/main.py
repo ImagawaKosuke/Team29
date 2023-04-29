@@ -30,7 +30,6 @@ background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 background2 = pygame.transform.chop(background, pygame.Rect(0,0,WIDTH, 500))
 title = pygame.image.load("./develop/title.png")
 font = pygame.font.SysFont('hgpｺﾞｼｯｸm', 30)  # 使用するフォントの設定
-font2 = pygame.font.SysFont('hgpｺﾞｼｯｸm', 23)  # 使用するフォントの設定
 
 question = '''ニコニコ動画で出てくるコメントを15文字程度で10個生成してください。
 条件:
@@ -115,7 +114,6 @@ def tgame():
                         txt_words.append(txt_tmp)  # 入力可能であれば保持する
                     if txt_give[len(txt_words) - 1:len(txt_words)] != txt_tmp:
                         print("カッスやなｗ")
-                        str_x = SURFACE.get_width()
                         bonus = 1
                         miss += 1
                         print(txt_tmp)
@@ -150,8 +148,8 @@ def tgame():
                 print('-------------------------')  # ログ
                 #
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
-        SURFACE.blit(background2, (0, 0))
-        question = font.render(''.join(txt_give), True, WHITE)
+        SURFACE.blit(background2, (0, 0, 0, 0))
+        question = font.render(''.join(txt_give), True,BLACK)
         SURFACE.blit(question, (
             str_x ,
             (HEIGHT / 2 -100) - (question.get_height() / 2 + question_height)
